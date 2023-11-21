@@ -5,3 +5,6 @@ chapter-0 *args:
 
 chapter-1 *args:
     cargo run --bin chapter-1 -- {{args}}
+
+chapter-2 *args:
+    cargo run --bin chapter-2 -- {{args}}
