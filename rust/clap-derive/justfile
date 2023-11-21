@@ -1,0 +1,4 @@
+set windows-shell := ["pwsh", "-NoProfile", "-Command"]
+
+chapter-0 *args:
+    cargo run --bin chapter-0 -- {{args}}
