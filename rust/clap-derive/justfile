@@ -14,3 +14,6 @@ chapter-2-subcommands *args:
 
 chapter-2-defaults *args:
     cargo run --bin chapter-2-defaults -- {{args}}
+
+chapter-3-enumerated-values *args:
+    cargo run --bin chapter-3-enumerated-values -- {{args}}
