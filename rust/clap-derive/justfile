@@ -17,3 +17,6 @@ chapter-2-defaults *args:
 
 chapter-3-enumerated-values *args:
     cargo run --bin chapter-3-enumerated-values -- {{args}}
+
+chapter-3-validated-values *args:
+    cargo run --bin chapter-3-validated-values -- {{args}}
