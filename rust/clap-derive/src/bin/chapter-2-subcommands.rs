@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -11,14 +11,20 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Adds files to myapp
-    Add { name: Option<String> },
+    Add(AddArgs),
 }
+
+#[derive(Args)]
+struct AddArgs {
+    name: Option<String>,
+}
+
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Add { name } => {
-            println!("Adding file: {:?}", name.as_deref());
+        Commands::Add(add_args) => {
+            println!("Adding file: {:?}", add_args.name.as_deref());
         }
     }
 }
