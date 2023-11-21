@@ -8,3 +8,6 @@ chapter-1 *args:
 
 chapter-2 *args:
     cargo run --bin chapter-2 -- {{args}}
+
+chapter-2-subcommands *args:
+    cargo run --bin chapter-2-subcommands -- {{args}}
