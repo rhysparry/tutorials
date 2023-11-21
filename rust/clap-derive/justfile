@@ -11,3 +11,6 @@ chapter-2 *args:
 
 chapter-2-subcommands *args:
     cargo run --bin chapter-2-subcommands -- {{args}}
+
+chapter-2-defaults *args:
+    cargo run --bin chapter-2-defaults -- {{args}}
