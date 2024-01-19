@@ -1,11 +1,17 @@
-use ratatui::prelude::CrosstermBackend;
-use ratatui::widgets::Paragraph;
-use ratatui::Terminal;
+use crossterm::{
+    event::{self, Event::Key, KeyCode::Char},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::{
+    prelude::{CrosstermBackend, Frame, Terminal},
+    widgets::Paragraph,
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // startup: Enable raw mode for the terminal, giving us fine control over user input
-    crossterm::terminal::enable_raw_mode()?;
-    crossterm::execute!(std::io::stderr(), crossterm::terminal::EnterAlternateScreen)?;
+    enable_raw_mode()?;
+    execute!(std::io::stderr(), EnterAlternateScreen)?;
 
     // Initialize the terminal backend using crossterm
     let mut terminal = Terminal::new(CrosstermBackend::new(std::io::stderr()))?;
@@ -22,14 +28,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         })?;
 
         // Check for user input every 250 milliseconds
-        if crossterm::event::poll(std::time::Duration::from_millis(250))? {
+        if event::poll(std::time::Duration::from_millis(250))? {
             // If a key event occurs, handle it
-            if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
-                if key.kind == crossterm::event::KeyEventKind::Press {
+            if let Key(key) = crossterm::event::read()? {
+                if key.kind == event::KeyEventKind::Press {
                     match key.code {
-                        crossterm::event::KeyCode::Char('j') => counter += 1,
-                        crossterm::event::KeyCode::Char('k') => counter -= 1,
-                        crossterm::event::KeyCode::Char('q') => break,
+                        Char('j') => counter += 1,
+                        Char('k') => counter -= 1,
+                        Char('q') => break,
                         _ => {}
                     }
                 }
@@ -38,8 +44,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // shutdown down: reset terminal back to original state
-    crossterm::execute!(std::io::stderr(), crossterm::terminal::LeaveAlternateScreen)?;
-    crossterm::terminal::disable_raw_mode()?;
+    execute!(std::io::stderr(), LeaveAlternateScreen)?;
+    disable_raw_mode()?;
 
     Ok(())
 }
