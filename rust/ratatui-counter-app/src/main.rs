@@ -9,44 +9,71 @@ use ratatui::{
     widgets::Paragraph,
 };
 
-fn main() -> Result<()> {
-    // startup: Enable raw mode for the terminal, giving us fine control over user input
+struct App {
+    counter: i64,
+    should_quit: bool,
+}
+
+fn startup() -> Result<()> {
     enable_raw_mode()?;
     execute!(std::io::stderr(), EnterAlternateScreen)?;
+    Ok(())
+}
 
-    // Initialize the terminal backend using crossterm
-    let mut terminal = Terminal::new(CrosstermBackend::new(std::io::stderr()))?;
+fn shutdown() -> Result<()> {
+    execute!(std::io::stderr(), LeaveAlternateScreen)?;
+    disable_raw_mode()?;
+    Ok(())
+}
 
-    // Define our counter variable
-    // This is the state of our application
-    let mut counter = 0;
+fn ui(app: &App, f: &mut Frame) {
+    let size = f.size();
+    let text = format!("Counter: {}", app.counter);
+    let paragraph = Paragraph::new(text);
+    f.render_widget(paragraph, size);
+}
 
-    // Main application loop
-    loop {
-        // Render the UI
-        terminal.draw(|f| {
-            f.render_widget(Paragraph::new(format!("Counter: {counter}")), f.size());
-        })?;
-
-        // Check for user input every 250 milliseconds
-        if event::poll(std::time::Duration::from_millis(250))? {
-            // If a key event occurs, handle it
-            if let Key(key) = crossterm::event::read()? {
-                if key.kind == event::KeyEventKind::Press {
-                    match key.code {
-                        Char('j') => counter += 1,
-                        Char('k') => counter -= 1,
-                        Char('q') => break,
-                        _ => {}
-                    }
+fn update(app: &mut App) -> Result<()> {
+    // Check for user input every 250 milliseconds
+    if event::poll(std::time::Duration::from_millis(250))? {
+        // If a key event occurs, handle it
+        if let Key(key) = crossterm::event::read()? {
+            if key.kind == event::KeyEventKind::Press {
+                match key.code {
+                    Char('j') => app.counter += 1,
+                    Char('k') => app.counter -= 1,
+                    Char('q') => app.should_quit = true,
+                    _ => {}
                 }
             }
         }
     }
+    Ok(())
+}
 
-    // shutdown down: reset terminal back to original state
-    execute!(std::io::stderr(), LeaveAlternateScreen)?;
-    disable_raw_mode()?;
+fn run() -> Result<()> {
+    let mut t = Terminal::new(CrosstermBackend::new(std::io::stderr()))?;
 
+    let mut app = App {
+        counter: 0,
+        should_quit: false,
+    };
+
+    loop {
+        t.draw(|f| ui(&app, f))?;
+        update(&mut app)?;
+        if app.should_quit {
+            break;
+        }
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    startup()?;
+    let status = run();
+    shutdown()?;
+    status?;
     Ok(())
 }
