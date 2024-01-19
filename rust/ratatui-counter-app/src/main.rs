@@ -1,3 +1,4 @@
+use anyhow::Result;
 use crossterm::{
     event::{self, Event::Key, KeyCode::Char},
     execute,
@@ -8,7 +9,7 @@ use ratatui::{
     widgets::Paragraph,
 };
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<()> {
     // startup: Enable raw mode for the terminal, giving us fine control over user input
     enable_raw_mode()?;
     execute!(std::io::stderr(), EnterAlternateScreen)?;
